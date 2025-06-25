@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "LOVO ®",
+    "slug": "lovo-mobile",
+    "version": "1.0.0",
+    "scheme": "lovo",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ff5252",
+      "hideExpoAppName": true
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "lovo.com.tr": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSExceptionMinimumTLSVersion": "1.0"
+            }
+          }
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ff5252"
+      },
+      "usesCleartextTraffic": true,
+      "networkSecurityConfig": "@xml/network_security_config"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ff5252",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
+        }
+      ]
+    ]
+  }
+}
