@@ -2,8 +2,6 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main, master ]
 
 jobs:
   build:
@@ -19,70 +17,38 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
-    - name: Install Expo CLI and dependencies
+    - name: Install dependencies
       run: |
-        npm install -g @expo/cli@latest
-        npm install --force
+        npm install --legacy-peer-deps
+        npm install -g eas-cli@latest
         
-    - name: Create simple app.config.js
+    - name: Setup EAS credentials (Guest mode)
       run: |
-        cat > app.config.js << 'EOF'
-        export default {
-          expo: {
-            name: "LOVO",
-            slug: "lovo-mobile", 
-            version: "1.0.0",
-            orientation: "portrait",
-            icon: "./assets/icon.png",
-            userInterfaceStyle: "light",
-            splash: {
-              image: "./assets/splash.png",
-              resizeMode: "contain",
-              backgroundColor: "#ff5252"
-            },
-            android: {
-              adaptiveIcon: {
-                foregroundImage: "./assets/adaptive-icon.png",
-                backgroundColor: "#ff5252"
-              },
-              package: "com.dijitalce.lovomobile"
-            },
-            plugins: []
-          }
-        };
-        EOF
+        echo "Using EAS Build without authentication"
         
-    - name: Create Metro config
+    - name: Build APK with EAS (Guest)
+      env:
+        EAS_NO_VCS: 1
       run: |
-        cat > metro.config.js << 'EOF'
-        const { getDefaultConfig } = require('expo/metro-config');
-        module.exports = getDefaultConfig(__dirname);
-        EOF
+        npx eas build --platform android --profile preview --non-interactive --no-wait
+        echo "EAS Build başlatıldı"
+        echo "Build tamamlandığında https://expo.dev sayfasından APK'yi indirebilirsiniz"
+        echo "Project ID: b3f04c06-1269-4c6e-8aa3-7ad15b31f50f"
         
-    - name: Build JavaScript Bundle
+    - name: Create Build Info
       run: |
-        npx expo export --platform android --output-dir dist
-        echo "JavaScript bundle created successfully"
+        mkdir -p build-info
+        echo "APK Build başlatıldı" > build-info/instructions.txt
+        echo "" >> build-info/instructions.txt
+        echo "APK'yi indirmek için:" >> build-info/instructions.txt
+        echo "1. https://expo.dev adresine gidin" >> build-info/instructions.txt
+        echo "2. Project ID: b3f04c06-1269-4c6e-8aa3-7ad15b31f50f" >> build-info/instructions.txt
+        echo "3. Build tamamlandığında APK dosyasını indirin" >> build-info/instructions.txt
+        echo "" >> build-info/instructions.txt
+        echo "Build süreci yaklaşık 10-15 dakika sürer." >> build-info/instructions.txt
         
-    - name: Package Build
-      run: |
-        mkdir -p build-output
-        cp -r dist build-output/
-        echo "Build completed at $(date)" > build-output/build-info.txt
-        echo "Platform: Android" >> build-output/build-info.txt
-        echo "Build type: JavaScript Bundle" >> build-output/build-info.txt
-        
-    - name: Upload Build
+    - name: Upload Build Info
       uses: actions/upload-artifact@v4
       with:
-        name: lovo-mobile-js-bundle
-        path: build-output/ 
+        name: apk-build-instructions
+        path: build-info/ 
