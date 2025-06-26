@@ -43,17 +43,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-secure-store",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#ff5252",
-          "image": "./assets/splash.png",
-          "imageWidth": 200
-        }
-      ]
-    ],
+    "plugins": [],
     "extra": {
       "eas": {
         "projectId": "b3f04c06-1269-4c6e-8aa3-7ad15b31f50f"
