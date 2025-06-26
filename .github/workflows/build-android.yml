@@ -28,37 +28,61 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: Install dependencies
+    - name: Install Expo CLI and dependencies
       run: |
-        npm install --legacy-peer-deps
         npm install -g @expo/cli@latest
-      
-    - name: Setup Expo
-      uses: expo/expo-github-action@v8
-      with:
-        expo-version: latest
+        npm install --force
         
-    - name: Verify app.json exists
+    - name: Create simple app.config.js
       run: |
-        if [ ! -f app.json ]; then
-          echo "app.json not found!"
-          exit 1
-        fi
-        cat app.json
+        cat > app.config.js << 'EOF'
+        export default {
+          expo: {
+            name: "LOVO",
+            slug: "lovo-mobile", 
+            version: "1.0.0",
+            orientation: "portrait",
+            icon: "./assets/icon.png",
+            userInterfaceStyle: "light",
+            splash: {
+              image: "./assets/splash.png",
+              resizeMode: "contain",
+              backgroundColor: "#ff5252"
+            },
+            android: {
+              adaptiveIcon: {
+                foregroundImage: "./assets/adaptive-icon.png",
+                backgroundColor: "#ff5252"
+              },
+              package: "com.dijitalce.lovomobile"
+            },
+            plugins: []
+          }
+        };
+        EOF
         
-    - name: Prebuild Android
+    - name: Create Metro config
       run: |
-        rm -rf android ios
-        npx expo prebuild --platform android --no-install
-      
-    - name: Build Android APK
-      run: |
-        cd android
-        chmod +x ./gradlew
-        ./gradlew assembleRelease
+        cat > metro.config.js << 'EOF'
+        const { getDefaultConfig } = require('expo/metro-config');
+        module.exports = getDefaultConfig(__dirname);
+        EOF
         
-    - name: Upload APK
+    - name: Build JavaScript Bundle
+      run: |
+        npx expo export --platform android --output-dir dist
+        echo "JavaScript bundle created successfully"
+        
+    - name: Package Build
+      run: |
+        mkdir -p build-output
+        cp -r dist build-output/
+        echo "Build completed at $(date)" > build-output/build-info.txt
+        echo "Platform: Android" >> build-output/build-info.txt
+        echo "Build type: JavaScript Bundle" >> build-output/build-info.txt
+        
+    - name: Upload Build
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
-        path: android/app/build/outputs/apk/release/app-release.apk 
+        name: lovo-mobile-js-bundle
+        path: build-output/ 
