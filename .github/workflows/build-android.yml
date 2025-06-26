@@ -38,37 +38,18 @@ jobs:
       with:
         expo-version: latest
         
-    - name: Create app.json for build
+    - name: Verify app.json exists
       run: |
-        cat > app.json << EOF
-        {
-          "expo": {
-            "name": "LOVO ®",
-            "slug": "lovo-mobile",
-            "version": "1.0.0",
-            "orientation": "portrait",
-            "icon": "./assets/icon.png",
-            "splash": {
-              "image": "./assets/splash.png",
-              "resizeMode": "contain",
-              "backgroundColor": "#ff5252"
-            },
-            "android": {
-              "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ff5252"
-              },
-              "package": "com.dijitalce.lovomobile"
-            },
-            "plugins": [
-              "expo-secure-store"
-            ]
-          }
-        }
-        EOF
+        if [ ! -f app.json ]; then
+          echo "app.json not found!"
+          exit 1
+        fi
+        cat app.json
         
     - name: Prebuild Android
-      run: npx expo prebuild --platform android --clear
+      run: |
+        rm -rf android ios
+        npx expo prebuild --platform android --no-install
       
     - name: Build Android APK
       run: |
