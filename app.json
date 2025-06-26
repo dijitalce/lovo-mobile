@@ -38,7 +38,7 @@
         "backgroundColor": "#ff5252"
       },
       "usesCleartextTraffic": true,
-      "networkSecurityConfig": "@xml/network_security_config"
+      "package": "com.dijitalce.lovomobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -53,6 +53,11 @@
           "imageWidth": 200
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b3f04c06-1269-4c6e-8aa3-7ad15b31f50f"
+      }
+    }
   }
 }
